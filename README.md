@@ -3,7 +3,31 @@
 This project uses a Convolutional Neural Network to classify music genres, using the GTZAN dataset.[^1] The data consists of 30-second audio (.wav) files representing 10 music genres: blues, classical, country, disco, hip hop, jazz, metal, pop, reggae, and rock.
 
 ## Setup
-Here is what the initial directory tree should look like:
+
+### 1. Pull the code from GitHub
+
+In a command prompt window, navigate to the folder where you want to store the project (replace `path` with the actual path, e.g. `C:\Users\your-username\Documents`):
+```
+cd path
+```
+
+Clone the repository and navigate into it:
+```
+git clone https://github.com/mmvp314/music-genre-classifier.git
+cd music-genre-classifier
+```
+
+### 2. Create the data and outputs folders
+
+The repository does not include the `data` and `outputs` folders. Create them manually:
+```
+mkdir data
+mkdir outputs
+mkdir outputs\figures
+mkdir outputs\models
+```
+
+Your directory tree should now look like this:
 ```
 music-classification
 ├───data
@@ -12,7 +36,10 @@ music-classification
 │   └───models
 └───src
 ```
-Once you have created this structure, download and extract the [GTZAN dataset](https://www.kaggle.com/datasets/andradaolteanu/gtzan-dataset-music-genre-classification) into the data folder. The structure should now look like this:
+
+### 3. Download the dataset
+
+Download and extract the [GTZAN dataset](https://www.kaggle.com/datasets/andradaolteanu/gtzan-dataset-music-genre-classification) into the `data` folder. The structure should now look like this:
 ```
 music-classification
 ├───data
@@ -44,28 +71,45 @@ music-classification
 └───src
 ```
 
-## How to run this code
+### 4. Create a Python environment
 
-The prompts below work for the Windows Command Prompt. Refer to documentation for other operating systems.
-
-In a command prompt window, navigate to your subfolder `music-classification` (replace `path` with the actual path e.g. `C:\Users\your-username\Documents\music-classification`):
+Create a virtual environment called `venv` (or any name you prefer):
 ```
-$ cd path\music-classification
+python -m venv venv
 ```
 
-To launch a training run, execute this line with any arguments detailed in the `GTZAN_train.py` file, for instance:
+Activate it:
 ```
-$ python GTZAN_train.py --epochs 20
-```
-
-To launch the evaluation, execute this line:
-```
-$ python GTZAN_evaluate.py
+venv\Scripts\activate
 ```
 
-When prompted, select the model you want to evaluate. A time stamp is appended to the model name so you can easily find the latest model run.
+You should see `(venv)` appear at the start of your command prompt line.
 
-Models are saved to `./outputs/models`. Figures are saved to `./outputs/figures`.
+### 5. Install dependencies
 
+```
+pip install -r requirements.txt
+```
+
+## How to run
+
+To launch a training run, execute this line with any arguments detailed in `GTZAN_train.py`, for instance:
+```
+python GTZAN_train.py --epochs 20
+```
+
+To evaluate a saved checkpoint, pass its filename via the `--checkpoint` argument:
+```
+python GTZAN_evaluate.py --checkpoint checkpoint_audioCNN_20240101_120000.pth
+```
+
+Saved checkpoints are in `outputs\models`. Figures are saved to `outputs\figures`.
+
+## Results
+
+| Model     | Architecture         | Test accuracy | Epochs |
+|-----------|----------------------|---------------|--------|
+| audioCNN  | 3 conv layers        | -             | -      |
+| audioCNN2 | 2 conv layers        | -             | -      |
 
 [^1]: George Tzanetakis, Georg Essl, and Perry Cook. Automatic musical genre classification of audio signals. 2001. URL: http://ismir2001.ismir.net/pdf/tzanetakis.pdf.
