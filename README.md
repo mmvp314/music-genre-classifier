@@ -95,7 +95,7 @@ pip install -r requirements.txt
 
 To launch a training run, execute this line with any arguments detailed in `GTZAN_train.py`, for instance:
 ```
-python GTZAN_train.py --epochs 20
+python GTZAN_train.py --architecture audioCNN --epochs 20
 ```
 
 To evaluate a saved checkpoint, pass its filename via the `--checkpoint` argument:
@@ -107,9 +107,16 @@ Saved checkpoints are in `outputs\models`. Figures are saved to `outputs\figures
 
 ## Results
 
-| Model     | Architecture         | Test accuracy | Epochs |
-|-----------|----------------------|---------------|--------|
-| audioCNN  | 3 conv layers        | -             | -      |
-| audioCNN2 | 2 conv layers        | -             | -      |
+| Model     | Architecture  | Batch size | Max epochs | Optimal epoch | Test accuracy |
+|-----------|---------------|------------|------------|---------------|---------------|
+| audioCNN  | 3 conv layers | 32         | 50         | 12            | 58.59%        |
+| audioCNN  | 3 conv layers | 64         | 20         | 20            | 59.60%        |
+| audioCNN2 | 2 conv layers | 64         | 20         | 19            | 42.42%        |
+| audioCNN  | 3 conv layers | 128        | 50         | 30            | 62.63%        |
+
+
+The optimal epoch is the epoch at which the highest validation accuracy is achieved and is indicated by a red dot on the training history plot. Batch normalisation is added to improve model accuracy as well as training speed.[^2]
+
 
 [^1]: George Tzanetakis, Georg Essl, and Perry Cook. Automatic musical genre classification of audio signals. 2001. URL: http://ismir2001.ismir.net/pdf/tzanetakis.pdf.
+[^2]: Sergey Ioffe and Christian Szegedy. Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift. 2015. https://doi.org/10.48550/arXiv.1502.03167
