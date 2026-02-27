@@ -10,7 +10,8 @@ def train_CNN(model,
               criterion,
               optimizer,
               epochs=5,
-              show_every=10):
+              show_every=10,
+              patience=5):
     """
     Train a CNN model, save model states and history.
 
@@ -22,6 +23,7 @@ def train_CNN(model,
         optimizer   : Optimizer
         epochs      : Number of epochs i.e. passes through the whole dataset
         show_every  : Frequency at which to print training progress and stats
+        patience    : Number of epochs after which, if the validation accuracy has not improved, training stops
 
     Returns:
         history     : Training history as a dict
@@ -108,6 +110,10 @@ def train_CNN(model,
 
         print(f'Epoch {epoch+1} complete. Train Loss: {train_loss:.4f}, Train Acc: {train_accuracy:.2f}%, '
               f'Val Loss: {val_loss:.4f}, Val Acc: {val_accuracy:.2f}%')
+        
+        if epoch - history['best_acc'][0] > patience:
+            print(f"Training stopped at epoch {epoch+1}: validation accuracy has not increased for 5 epochs")
+            break
 
     # Give checkpoint a unique file name
     model_id = datetime.datetime.now()
