@@ -117,5 +117,11 @@ Saved checkpoints are in `outputs\models`. Figures are saved to `outputs\figures
 
 The optimal epoch is the epoch at which the highest validation accuracy is achieved and is indicated by a red dot on the training history plot.
 
+## Bonus
+
+The "bonus" notebooks provide an overview of how basic implementations of other ML classification models perform:
+- `bonus_svm.ipynb`: Principal Component Analysis (PCA) and Standard Vector Machine (SVM)
+- `bonus_random_forest.ipynb`: Random forest (work in progress)
+- `bonus_xgboost.ipynb`: XGBoost (work in progress)
 
 [^1]: George Tzanetakis, Georg Essl, and Perry Cook. Automatic musical genre classification of audio signals. 2001. URL: http://ismir2001.ismir.net/pdf/tzanetakis.pdf.
