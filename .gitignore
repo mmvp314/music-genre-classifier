@@ -13,9 +13,10 @@ ENV/
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
 
-# Folders
+# Specific folders and files
 data/*
 outputs*
+src/dataset_predict.py
 
 # IDE
 .vscode/

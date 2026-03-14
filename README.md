@@ -2,7 +2,14 @@
 
 This project uses a Convolutional Neural Network to classify music genres, using the GTZAN dataset.[^1] The data consists of 30-second audio (.wav) files representing 10 music genres: blues, classical, country, disco, hip hop, jazz, metal, pop, reggae, and rock.
 
-## Setup
+Table of contents
+- [Setup](#setup)
+- [How to run the files](#howtorun)
+- [Some results](#results)
+- [Predict the genre of any audio file](#predict)
+- [Bonus: Other ML approaches](#bonus)
+
+## [Setup](#setup)
 
 ### 1. Pull the code from GitHub
 
@@ -91,7 +98,7 @@ You should see `(venv)` appear at the start of your command prompt line.
 pip install -r requirements.txt
 ```
 
-## How to run
+## [How to run the files](#howtorun)
 
 To launch a training run, execute this line with any arguments detailed in `GTZAN_train.py`, for instance:
 ```
@@ -105,7 +112,7 @@ python GTZAN_evaluate.py --checkpoint checkpoint_audioCNN_20240101_120000.pth
 
 Saved checkpoints are in `outputs\models`. Figures are saved to `outputs\figures`.
 
-## Results
+## [Some results](#results)
 
 | Model     | Architecture  | Batch size | Max epochs | Optimal epoch | Test accuracy |
 |-----------|---------------|------------|------------|---------------|---------------|
@@ -117,7 +124,50 @@ Saved checkpoints are in `outputs\models`. Figures are saved to `outputs\figures
 
 The optimal epoch is the epoch at which the highest validation accuracy is achieved and is indicated by a red dot on the training history plot.
 
-## Bonus
+## [Predict the genre of any audio file](#predict)
+To predict the genre of any audio file, you need to:
+1. Have a trained model in your `./outputs/models` folder
+2. Have an audio file that is at least 30 seconds long and a standard format such as MPI or WAV. Below is a list of formats that should be supported:
+
+***
+<details>
+<summary>Accepted file formats</summary>
+
+| Extension | Description                        |
+|-----------|------------------------------------|
+| AIFF      | AIFF (Apple/SGI)                   |
+| AU        | AU (Sun/NeXT)                      |
+| AVR       | AVR (Audio Visual Research)        |
+| CAF       | CAF (Apple Core Audio File)        |
+| FLAC      | FLAC (Free Lossless Audio Codec)   |
+| HTK       | HTK (HMM Tool Kit)                 |
+| SVX       | IFF (Amiga IFF/SVX8/SV16)          |
+| MAT4      | MAT4 (GNU Octave 2.0 / Matlab 4.2) |
+| MAT5      | MAT5 (GNU Octave 2.1 / Matlab 5.0) |
+| MPC2K     | MPC (Akai MPC 2k)                  |
+| MP3       | MPEG-1/2 Audio                     |
+| OGG       | OGG (OGG Container format)         |
+| PAF       | PAF (Ensoniq PARIS)                |
+| PVF       | PVF (Portable Voice Format)        |
+| RAW       | RAW (header-less)                  |
+| RF64      | RF64 (RIFF 64)                     |
+| SD2       | SD2 (Sound Designer II)            |
+| SDS       | SDS (Midi Sample Dump Standard)    |
+| IRCAM     | SF (Berkeley/IRCAM/CARL)           |
+| VOC       | VOC (Creative Labs)                |
+| W64       | W64 (SoundFoundry WAVE 64)         |
+| WAV       | WAV (Microsoft)                    |
+| NIST      | WAV (NIST Sphere)                  |
+| WAVEX     | WAVEX (Microsoft)                  |
+| WVE       | WVE (Psion Series 3)               |
+| XI        | XI (FastTracker 2)                 |
+</details>
+
+***
+
+3. Run the `GTZAN_predict.py` file with the arguments to load the trained model (`checkpoint-path` for the folder and `checkpoint-name` for the file name including the `.pth` extension) and the audio file (`filepath` for the folder and `name` for the file name including the file extension).
+
+## [Bonus: Classification using other machine learning paradigms](#bonus)
 
 The "bonus" notebooks provide an overview of how basic implementations of other ML classification models perform:
 - `bonus_svm.ipynb`: Principal Component Analysis (PCA) and Standard Vector Machine (SVM)
