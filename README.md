@@ -2,14 +2,7 @@
 
 This project uses a Convolutional Neural Network to classify music genres, using the GTZAN dataset.[^1] The data consists of 30-second audio (.wav) files representing 10 music genres: blues, classical, country, disco, hip hop, jazz, metal, pop, reggae, and rock.
 
-Table of contents
-- [Setup](#setup)
-- [How to run the files](#howtorun)
-- [Some results](#results)
-- [Predict the genre of any audio file](#predict)
-- [Bonus: Other ML approaches](#bonus)
-
-## [Setup](#setup)
+## Setup
 
 ### 1. Pull the code from GitHub
 
@@ -98,7 +91,7 @@ You should see `(venv)` appear at the start of your command prompt line.
 pip install -r requirements.txt
 ```
 
-## [How to run the files](#howtorun)
+## How to run the files
 
 To launch a training run, execute this line with any arguments detailed in `GTZAN_train.py`, for instance:
 ```
@@ -112,7 +105,7 @@ python GTZAN_evaluate.py --checkpoint checkpoint_audioCNN_20240101_120000.pth
 
 Saved checkpoints are in `outputs\models`. Figures are saved to `outputs\figures`.
 
-## [Some results](#results)
+## Some results
 
 | Model     | Architecture  | Batch size | Max epochs | Optimal epoch | Test accuracy |
 |-----------|---------------|------------|------------|---------------|---------------|
@@ -124,10 +117,10 @@ Saved checkpoints are in `outputs\models`. Figures are saved to `outputs\figures
 
 The optimal epoch is the epoch at which the highest validation accuracy is achieved and is indicated by a red dot on the training history plot.
 
-## [Predict the genre of any audio file](#predict)
+## Predict the genre of any audio file
 To predict the genre of any audio file, you need to:
 1. Have a trained model in your `./outputs/models` folder
-2. Have an audio file that is at least 30 seconds long and a standard format such as MPI or WAV. Below is a list of formats that should be supported:
+2. Have an audio file that is at least 30 seconds long and a standard format such as MP3 or WAV. Below is a list of formats that should be supported:
 
 ***
 <details>
@@ -167,7 +160,7 @@ To predict the genre of any audio file, you need to:
 
 3. Run the `GTZAN_predict.py` file with the arguments to load the trained model (`checkpoint-path` for the folder and `checkpoint-name` for the file name including the `.pth` extension) and the audio file (`filepath` for the folder and `name` for the file name including the file extension).
 
-## [Bonus: Classification using other machine learning paradigms](#bonus)
+## Bonus: Classification using other machine learning paradigms
 
 The "bonus" notebooks provide an overview of how basic implementations of other ML classification models perform:
 - `bonus_svm.ipynb`: Principal Component Analysis (PCA) and Standard Vector Machine (SVM)

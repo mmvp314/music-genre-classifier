@@ -109,7 +109,8 @@ def predict_genre(model, filepath, name):
 
 if __name__ == "__main__":
     # Loading best performing model
-    checkpoint_path = os.path.join(cwd, "outputs", "models", "checkpoint_audioCNN_20260226_172229.pth")
+    # May require changing file name
+    checkpoint_path = os.path.join(cwd, "outputs", "models", "checkpoint_audioCNN_best.pth")
     model = load_model(checkpoint_path)
 
     # Example using a random example drawn from a directory containing audio files
