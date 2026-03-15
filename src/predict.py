@@ -10,15 +10,14 @@ import IPython.display as display
 import torchvision.transforms as transforms
 import librosa
 
-cwd = os.getcwd()
-if cwd.endswith("src"):
-    cwd = os.pardir
+if __name__ == "__main__":
     from model import audioCNN, audioCNN2
     from evaluate import load_checkpoint
 else:
     from .model import audioCNN, audioCNN2
     from .evaluate import load_checkpoint
-classes = os.listdir(os.path.join(cwd,"data","genres_original"))
+
+classes = os.listdir(os.path.join("data","genres_original"))
 
 # We are using the best-performing CNN architecture that we tested, which contains 3 convolution layers.
 model_classes = {'audioCNN': audioCNN, 'audioCNN2': audioCNN2}
@@ -38,9 +37,9 @@ def predict_genre(model, filepath, name):
     filename = os.path.join(filepath, name)
 
     # Create temporary directory to save spectrograms to
-    if not os.path.exists(os.path.join(cwd, "data","tmp_dir")):
-        os.mkdir(os.path.join(cwd, "data","tmp_dir"))
-    tmp_dir = os.path.join(cwd, "data", "tmp_dir")
+    if not os.path.exists(os.path.join("data","tmp_dir")):
+        os.mkdir(os.path.join("data","tmp_dir"))
+    tmp_dir = os.path.join("data", "tmp_dir")
 
     # Load audio file and convert to spectrogram
     y, sr = librosa.load(filename)
@@ -53,7 +52,10 @@ def predict_genre(model, filepath, name):
     seg_duration = 30 # duration of each segment - must match what the model was trained on!
     seg_length = int(sr * seg_duration) # length of each segment = sampling rate * seconds
     n_segments = int(np.floor(duration/seg_duration) + 1) # total number of segments with small overlap between segments
-    overlap = int(sr * (n_segments * seg_duration - duration) / (n_segments - 1)) # length of overlap
+    if n_segments > 1:
+        overlap = int(sr * (n_segments * seg_duration - duration) / (n_segments - 1)) # length of overlap
+    else:
+        overlap = 0
 
     for i in range(n_segments):
         # Create 30-second segment
@@ -104,19 +106,21 @@ def predict_genre(model, filepath, name):
     max_len = max([len(c) for c in classes])
     spaces = {c: ' '*(max_len - len(c)) for c in classes}
 
-    for i in range(10):
+    sorted_probas = reversed(np.argsort(avg_probs))
+
+    for i in sorted_probas:
         print(f"{classes[i]}:{spaces[classes[i]]}\t{avg_probs[i]*100:.2f}%")
 
 if __name__ == "__main__":
     # Loading best performing model
     # May require changing file name
-    checkpoint_path = os.path.join(cwd, "outputs", "models", "checkpoint_audioCNN_best.pth")
+    checkpoint_path = os.path.join("outputs", "models", "checkpoint_audioCNN_best.pth")
     model = load_model(checkpoint_path)
 
     # Example using a random example drawn from a directory containing audio files
 
     # Directory of audio tracks to test
-    sample_dir = os.path.join(cwd, "data", "test_samples")
+    sample_dir = os.path.join("data", "test_samples")
 
     i = random.randint(0,len(os.listdir(sample_dir))-1)
     filename = os.listdir(sample_dir)[i]
