@@ -1,0 +1,821 @@
+<!--
+Music Genre Classifier - AI-powered music genre classification
+Copyright (C) 2026 Mathilde Pascal
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+See COPYING file for full details.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Upload an audio file to predict its music genre using AI">
+    <title>Music Genre Classifier - AI-Powered Genre Detection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* Skip to main content link for keyboard users */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #667eea;
+            color: white;
+            padding: 8px;
+            text-decoration: none;
+            z-index: 100;
+        }
+        
+        .skip-link:focus {
+            top: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 32px;
+        }
+        
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 10px;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .upload-area:hover,
+        .upload-area:focus-within {
+            border-color: #764ba2;
+            background: #f8f9ff;
+        }
+        
+        .upload-area.dragover {
+            border-color: #764ba2;
+            background: #f0f0ff;
+        }
+        
+        input[type="file"] {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+        
+        .upload-label {
+            cursor: pointer;
+            color: #667eea;
+            font-weight: bold;
+            display: block;
+        }
+        
+        .upload-label:focus {
+            outline: 3px solid #667eea;
+            outline-offset: 4px;
+        }
+        
+        .file-info {
+            margin-top: 15px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:focus {
+            outline: 3px solid #333;
+            outline-offset: 2px;
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            opacity: 0.6;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .loading.active {
+            display: block;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Screen reader only text */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+        
+        .results {
+            display: none;
+            margin-top: 30px;
+        }
+        
+        .results.active {
+            display: block;
+        }
+        
+        .result-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .predicted-genre {
+            font-size: 36px;
+            color: #4a3f9e;  /* Darker for better contrast - was #667eea */
+            font-weight: bold;
+            margin: 10px 0;
+            word-break: break-word;
+        }
+        
+        .confidence {
+            font-size: 18px;
+            color: #555;  /* Darker for better contrast - was #666 */
+        }
+        
+        .audio-player {
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        audio {
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        audio:focus {
+            outline: 3px solid #667eea;
+            outline-offset: 2px;
+        }
+        
+        .probabilities {
+            margin-top: 20px;
+        }
+        
+        .probabilities h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .prob-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .prob-genre {
+            font-weight: bold;
+            color: #333;
+            text-transform: capitalize;
+            min-width: 80px;
+            width: 80px;
+            flex-shrink: 0;
+        }
+        
+        .prob-bar-container {
+            flex: 1;
+            max-width: 350px;
+            height: 25px;
+            background: #e0e0e0;  /* Darker for better contrast - was #f0f0f0 */
+            border-radius: 12px;
+            margin: 0 15px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .prob-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4a3f9e 0%, #5a3f8e 100%);  /* Darker for better contrast */
+            border-radius: 12px;
+            transition: width 0.5s ease;
+        }
+        
+        .prob-value {
+            color: #333;  /* Darker for better contrast - was #666 */
+            font-weight: bold;
+            min-width: 55px;
+            width: 55px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+        
+        .error {
+            display: none;
+            background: #fee;
+            border: 2px solid #c33;  /* Stronger border for better visibility */
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            color: #a00;  /* Darker red for better contrast - was #c33 */
+            word-break: break-word;
+        }
+        
+        .error.active {
+            display: block;
+        }
+        
+        /* Error icon for better visibility */
+        .error::before {
+            content: "⚠️ ";
+            font-size: 20px;
+        }
+        
+        .new-upload {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .new-upload button {
+            width: auto;
+            padding: 10px 30px;
+            background: #4a3f9e;  /* Darker for consistency */
+        }
+        
+        .file-details {
+            font-size: 12px;
+            color: #555;  /* Darker for better contrast - was #999 */
+            margin-top: 10px;
+            word-break: break-word;
+        }
+
+        /* Footer styles */
+        footer {
+            margin-top: 30px;
+        }
+        
+        footer a {
+            transition: background-color 0.2s;
+        }
+        
+        footer a:focus {
+            outline: 3px solid white !important;
+            outline-offset: 2px !important;
+        }
+        
+        footer a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        @media (max-width: 600px) {
+            footer {
+                margin-top: 20px;
+                padding: 15px 0;
+            }
+            
+            footer a {
+                font-size: 13px !important;
+                padding: 6px 10px !important;
+                display: block;
+                margin: 10px auto !important;
+                max-width: 200px;
+            }
+        }
+        
+        /* Focus visible for all interactive elements */
+        a:focus, button:focus, input:focus, label:focus {
+            outline: 3px solid #333;
+            outline-offset: 2px;
+        }
+        
+        /* RESPONSIVE DESIGN - MOBILE */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 25px 20px;
+                border-radius: 15px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .subtitle {
+                font-size: 12px;
+                margin-bottom: 20px;
+            }
+            
+            .upload-area {
+                padding: 30px 15px;
+            }
+            
+            .upload-label {
+                font-size: 14px;
+            }
+            
+            .file-info {
+                font-size: 12px;
+            }
+            
+            button {
+                padding: 12px;
+                font-size: 14px;
+            }
+            
+            .predicted-genre {
+                font-size: 28px;
+            }
+            
+            .confidence {
+                font-size: 16px;
+            }
+            
+            .probabilities h3 {
+                font-size: 16px;
+            }
+            
+            .prob-genre {
+                min-width: 65px;
+                width: 65px;
+                font-size: 13px;
+            }
+            
+            .prob-bar-container {
+                margin: 0 10px;
+                height: 22px;
+            }
+            
+            .prob-value {
+                min-width: 50px;
+                width: 50px;
+                font-size: 13px;
+            }
+            
+            .file-details {
+                font-size: 11px;
+            }
+            
+            .new-upload button {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+        }
+        
+        /* RESPONSIVE DESIGN - SMALL MOBILE */
+        @media (max-width: 400px) {
+            .container {
+                padding: 20px 15px;
+            }
+            
+            h1 {
+                font-size: 20px;
+            }
+            
+            .upload-area {
+                padding: 25px 10px;
+            }
+            
+            .predicted-genre {
+                font-size: 24px;
+            }
+            
+            .prob-genre {
+                min-width: 55px;
+                width: 55px;
+                font-size: 12px;
+            }
+            
+            .prob-bar-container {
+                margin: 0 8px;
+                height: 20px;
+            }
+            
+            .prob-value {
+                min-width: 45px;
+                width: 45px;
+                font-size: 12px;
+            }
+        }
+        
+        /* RESPONSIVE DESIGN - TABLETS */
+        @media (min-width: 601px) and (max-width: 900px) {
+            .container {
+                padding: 35px;
+            }
+            
+            h1 {
+                font-size: 28px;
+            }
+        }
+        
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            .prob-bar {
+                background: #000;
+            }
+            
+            button {
+                background: #000;
+            }
+        }
+        
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip link for keyboard navigation -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <main id="main-content" class="container" role="main">
+        <h1>🎵 Music Genre Classifier</h1>
+        <p class="subtitle">Upload an audio file to predict its genre using AI</p>
+        
+        <div class="upload-area" id="uploadArea" role="region" aria-label="File upload area">
+            <label for="audioFile" class="upload-label" tabindex="0">
+                <div><span aria-hidden="true">📁</span> Click to select or drag and drop</div>
+                <div class="file-info">Supported: MP3, WAV, FLAC, OGG (Max 20MB)</div>
+            </label>
+            <input 
+                type="file" 
+                id="audioFile" 
+                accept=".mp3,.wav,.flac,.ogg,audio/mpeg,audio/wav,audio/flac,audio/ogg"
+                aria-label="Select audio file"
+                aria-describedby="fileInfo"
+            >
+            <div id="fileInfo" class="file-details" role="status" aria-live="polite"></div>
+        </div>
+        
+        <button 
+            id="predictBtn" 
+            disabled 
+            aria-label="Predict genre of uploaded audio file"
+            aria-describedby="fileInfo"
+        >
+            Predict Genre
+        </button>
+        
+        <div class="loading" id="loading" role="status" aria-live="polite" aria-label="Analyzing audio">
+            <div class="spinner" aria-hidden="true"></div>
+            <p>Analyzing audio...</p>
+            <span class="sr-only">Please wait while we analyze your audio file</span>
+        </div>
+        
+        <div class="error" id="error" role="alert" aria-live="assertive"></div>
+        
+        <section class="results" id="results" aria-label="Prediction results">
+            <div class="result-header">
+                <div id="resultLabel">Predicted Genre:</div>
+                <div 
+                    class="predicted-genre" 
+                    id="predictedGenre" 
+                    aria-labelledby="resultLabel"
+                    role="status"
+                >-</div>
+                <div class="confidence" id="confidence" role="status">-</div>
+            </div>
+            
+            <div class="audio-player">
+                <label for="audioPlayer"><strong>Listen to your track:</strong></label>
+                <audio 
+                    id="audioPlayer" 
+                    controls 
+                    aria-label="Audio player for uploaded track"
+                    preload="metadata"
+                ></audio>
+            </div>
+            
+            <div class="probabilities">
+                <h3 id="probListHeading">All Probabilities:</h3>
+                <div 
+                    id="probabilitiesList" 
+                    role="list" 
+                    aria-labelledby="probListHeading"
+                ></div>
+            </div>
+            
+            <div class="new-upload">
+                <button 
+                    onclick="resetUpload()" 
+                    aria-label="Upload a different audio file"
+                >
+                    Upload Another File
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <footer role="contentinfo" style="text-align: center; margin-top: 30px; padding: 20px 0;">
+        <nav aria-label="Footer navigation">
+            <a href="/about" 
+               style="color: white; text-decoration: none; font-size: 14px; margin-right: 20px; display: inline-block; padding: 8px 12px; border-radius: 5px;"
+               onmouseover="this.style.backgroundColor='rgba(255,255,255,0.2)'"
+               onmouseout="this.style.backgroundColor='transparent'"
+               onfocus="this.style.outline='3px solid white'; this.style.outlineOffset='2px'"
+               onblur="this.style.outline='none'">
+                <span aria-hidden="true">ℹ️</span> About
+            </a>
+            <a href="https://github.com/mmvp314/music-genre-classifier" 
+               target="_blank" 
+               rel="noopener noreferrer" 
+               style="color: white; text-decoration: none; font-size: 14px; display: inline-block; padding: 8px 12px; border-radius: 5px;"
+               aria-label="View source code on GitHub (opens in new tab)"
+               onmouseover="this.style.backgroundColor='rgba(255,255,255,0.2)'"
+               onmouseout="this.style.backgroundColor='transparent'"
+               onfocus="this.style.outline='3px solid white'; this.style.outlineOffset='2px'"
+               onblur="this.style.outline='none'">
+                <svg width="24" height="24" viewBox="0 0 16 16" fill="white" style="vertical-align: middle; margin-right: 5px;" aria-hidden="true" focusable="false">
+                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+                </svg>
+                GitHub
+            </a>
+        </nav>
+    </footer>
+        
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const audioFile = document.getElementById('audioFile');
+        const fileInfo = document.getElementById('fileInfo');
+        const predictBtn = document.getElementById('predictBtn');
+        const loading = document.getElementById('loading');
+        const error = document.getElementById('error');
+        const results = document.getElementById('results');
+        
+        let selectedFile = null;
+        
+        // Make label keyboard accessible
+        document.querySelector('.upload-label').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                audioFile.click();
+            }
+        });
+        
+        // File selection
+        audioFile.addEventListener('change', (e) => {
+            handleFileSelect(e.target.files[0]);
+        });
+        
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+            uploadArea.setAttribute('aria-label', 'Drop file to upload');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+            uploadArea.setAttribute('aria-label', 'File upload area');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            uploadArea.setAttribute('aria-label', 'File upload area');
+            handleFileSelect(e.dataTransfer.files[0]);
+        });
+        
+        function handleFileSelect(file) {
+            if (!file) return;
+            
+            // Validate file type
+            const validTypes = ['audio/mpeg', 'audio/wav', 'audio/flac', 'audio/ogg', 'audio/x-wav'];
+            const validExtensions = ['.mp3', '.wav', '.flac', '.ogg'];
+            const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+            
+            if (!validTypes.includes(file.type) && !validExtensions.includes(fileExtension)) {
+                showError('Invalid file type. Please upload MP3, WAV, FLAC, or OGG files.');
+                announceToScreenReader('Error: Invalid file type');
+                return;
+            }
+            
+            // Validate file size (20MB)
+            if (file.size > 20 * 1024 * 1024) {
+                showError('File too large. Maximum size is 20MB.');
+                announceToScreenReader('Error: File too large');
+                return;
+            }
+            
+            selectedFile = file;
+            const fileSizeMB = (file.size / 1024 / 1024).toFixed(2);
+            fileInfo.textContent = `Selected: ${file.name} (${fileSizeMB} MB)`;
+            announceToScreenReader(`File selected: ${file.name}, ${fileSizeMB} megabytes`);
+            predictBtn.disabled = false;
+            predictBtn.setAttribute('aria-disabled', 'false');
+            hideError();
+        }
+        
+        // Predict button
+        predictBtn.addEventListener('click', async () => {
+            if (!selectedFile) return;
+            
+            // Hide previous results/errors
+            results.classList.remove('active');
+            results.setAttribute('aria-hidden', 'true');
+            hideError();
+            
+            // Show loading
+            loading.classList.add('active');
+            predictBtn.disabled = true;
+            predictBtn.setAttribute('aria-disabled', 'true');
+            announceToScreenReader('Analyzing audio file, please wait');
+            
+            // Create form data
+            const formData = new FormData();
+            formData.append('audio_file', selectedFile);
+            
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Prediction failed');
+                }
+                
+                displayResults(data);
+                announceToScreenReader(`Prediction complete. Genre: ${data.predicted_genre}`);
+                
+            } catch (err) {
+                showError(err.message);
+                announceToScreenReader(`Error: ${err.message}`);
+            } finally {
+                loading.classList.remove('active');
+                predictBtn.disabled = false;
+                predictBtn.setAttribute('aria-disabled', 'false');
+            }
+        });
+        
+        function displayResults(data) {
+            // Update genre and confidence
+            const genreElement = document.getElementById('predictedGenre');
+            const confidenceElement = document.getElementById('confidence');
+            
+            genreElement.textContent = data.predicted_genre;
+            confidenceElement.textContent = `Confidence: ${(data.confidence * 100).toFixed(1)}%`;
+            
+            // Set up audio player
+            const audioPlayer = document.getElementById('audioPlayer');
+            audioPlayer.src = `/audio/${data.audio_id}`;
+            
+            // Display probabilities
+            const probList = document.getElementById('probabilitiesList');
+            probList.innerHTML = '';
+            
+            for (const [genre, prob] of Object.entries(data.all_probabilities)) {
+                const probItem = document.createElement('div');
+                probItem.className = 'prob-item';
+                probItem.setAttribute('role', 'listitem');
+                
+                const percentage = (prob * 100).toFixed(1);
+                
+                probItem.innerHTML = `
+                    <span class="prob-genre">${genre}</span>
+                    <div class="prob-bar-container" role="progressbar" aria-valuenow="${percentage}" aria-valuemin="0" aria-valuemax="100" aria-label="${genre} probability">
+                        <div class="prob-bar" style="width: ${prob * 100}%"></div>
+                    </div>
+                    <span class="prob-value" aria-hidden="true">${percentage}%</span>
+                    <span class="sr-only">${genre}: ${percentage} percent probability</span>
+                `;
+                probList.appendChild(probItem);
+            }
+            
+            // Show results
+            results.classList.add('active');
+            results.setAttribute('aria-hidden', 'false');
+            
+            // Focus on results for screen readers
+            genreElement.focus();
+        }
+        
+        function showError(message) {
+            error.textContent = message;
+            error.classList.add('active');
+            error.setAttribute('role', 'alert');
+        }
+        
+        function hideError() {
+            error.classList.remove('active');
+            error.removeAttribute('role');
+        }
+        
+        function resetUpload() {
+            selectedFile = null;
+            audioFile.value = '';
+            fileInfo.textContent = '';
+            predictBtn.disabled = true;
+            predictBtn.setAttribute('aria-disabled', 'true');
+            results.classList.remove('active');
+            results.setAttribute('aria-hidden', 'true');
+            hideError();
+            announceToScreenReader('Upload form reset. Please select a new file');
+            
+            // Focus on file input
+            document.querySelector('.upload-label').focus();
+        }
+        
+        // Helper function for screen reader announcements
+        function announceToScreenReader(message) {
+            const announcement = document.createElement('div');
+            announcement.setAttribute('role', 'status');
+            announcement.setAttribute('aria-live', 'polite');
+            announcement.className = 'sr-only';
+            announcement.textContent = message;
+            document.body.appendChild(announcement);
+            
+            setTimeout(() => {
+                document.body.removeChild(announcement);
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

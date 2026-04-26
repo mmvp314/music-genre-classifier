@@ -1,0 +1,257 @@
+<!--
+Music Genre Classifier - AI-powered music genre classification
+Copyright (C) 2026 Mathilde Pascal
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+See COPYING file for full details.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="About the Music Genre Classifier - AI-powered genre detection using deep learning">
+    <title>About - Music Genre Classifier</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* Skip link */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #667eea;
+            color: white;
+            padding: 8px;
+            text-decoration: none;
+            z-index: 100;
+        }
+        
+        .skip-link:focus {
+            top: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: white;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            color: #333;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            color: #4a3f9e;
+            margin-bottom: 20px;
+            font-size: 32px;
+        }
+        
+        h2 {
+            color: #4a3f9e;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+        
+        p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: #555;
+        }
+        
+        ul {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+        
+        li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+            color: #555;
+        }
+        
+        a {
+            color: #4a3f9e;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+        
+        a:hover {
+            text-decoration: none;
+        }
+        
+        a:focus {
+            outline: 3px solid #333;
+            outline-offset: 2px;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .back-link:focus {
+            outline: 3px solid #333;
+            outline-offset: 2px;
+        }
+        
+        /* Improved list styling for accessibility */
+        strong {
+            color: #333;
+        }
+        
+        @media (max-width: 600px) {
+            body {
+                padding: 20px 10px;
+            }
+            
+            .container {
+                padding: 25px 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            h2 {
+                font-size: 20px;
+            }
+        }
+        
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            .back-link {
+                background: #000;
+                border: 2px solid white;
+            }
+        }
+        
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip link for keyboard navigation -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <main id="main-content" class="container" role="main">
+        <h1><span aria-hidden="true">🎵</span> About Music Genre Classifier</h1>
+        
+        <p>
+            This web application uses deep learning to automatically predict the genre of music from audio files. 
+            Upload any song and get instant predictions powered by a convolutional neural network (CNN).
+        </p>
+        
+        <h2>How It Works</h2>
+        <p>The classifier follows these steps:</p>
+        <ul>
+            <li><strong>Audio Processing:</strong> Your audio file is divided into 30-second segments</li>
+            <li><strong>Spectrogram Generation:</strong> Each segment is converted to a mel-spectrogram (a visual representation of sound)</li>
+            <li><strong>CNN Prediction:</strong> A trained neural network analyses each spectrogram</li>
+            <li><strong>Ensemble Averaging:</strong> Predictions from all segments are averaged for the final result</li>
+        </ul>
+        
+        <h2>Supported Genres</h2>
+        <p>The model can classify music into 10 genres:</p>
+        <ul role="list">
+            <li>Blues</li>
+            <li>Classical</li>
+            <li>Country</li>
+            <li>Disco</li>
+            <li>Hip-hop</li>
+            <li>Jazz</li>
+            <li>Metal</li>
+            <li>Pop</li>
+            <li>Reggae</li>
+            <li>Rock</li>
+        </ul>
+        
+        <h2>Training Data</h2>
+        <p>
+            The model was trained on the <abbr title="Genre Tagged Zone Annotated">GTZAN</abbr> Genre Collection dataset, 
+            which contains 1,000 audio tracks (100 per genre), each 30 seconds long. This is a widely-used benchmark 
+            dataset in music information retrieval research.
+        </p>
+        
+        <h2>Technical Details</h2>
+        <ul role="list">
+            <li><strong>Model Architecture:</strong> Convolutional Neural Network (CNN) with 3 convolutional layers</li>
+            <li><strong>Framework:</strong> PyTorch</li>
+            <li><strong>Audio Processing:</strong> Librosa</li>
+            <li><strong>Web Framework:</strong> Flask</li>
+            <li><strong>Input Format:</strong> MP3, WAV, FLAC, OGG (maximum 20 megabytes)</li>
+        </ul>
+        
+        <h2>Limitations</h2>
+        <p>Please note:</p>
+        <ul role="list">
+            <li>Predictions are based on patterns learned from the training data and may not always be accurate. The model achieved 62.63% accuracy on the validation dataset.</li>
+            <li>Subgenres or fusion genres may not be classified accurately</li>
+            <li>Audio quality may affect prediction accuracy</li>
+        </ul>
+        
+        <h2>Privacy</h2>
+        <p>
+            Your uploaded audio files are processed in-memory and are not permanently stored on the server. 
+            Files are temporarily cached for playback and automatically deleted after 30 minutes.
+        </p>
+
+        <h2>License</h2>
+        <p>
+            This project is licensed under the <strong>GNU General Public License v3.0</strong>. 
+            You are free to use, modify, and distribute this software under the terms of the GPL-3.0 license. 
+            See the <a href="https://github.com/mmvp314/music-genre-classifier/COPYING.txt" 
+            target="_blank" 
+            rel="noopener noreferrer">LICENSE file</a> for details.
+        </p>
+        
+        <h2>Source Code</h2>
+        <p>
+            This project is open source. View the code, report issues, or contribute on 
+            <a href="https://github.com/mmvp314/music-genre-classifier" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               aria-label="View project on GitHub (opens in new tab)">GitHub</a>.
+        </p>
+        
+        <nav aria-label="Return navigation">
+            <a href="/" class="back-link" aria-label="Return to music genre classifier"><span aria-hidden="true">←</span> Back to Classifier</a>
+        </nav>
+    </main>
+</body>
+</html>
