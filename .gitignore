@@ -17,6 +17,7 @@ ENV/
 data/*
 outputs*
 src/dataset_predict.py
+config.py
 
 # IDE
 .vscode/
